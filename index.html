@@ -3,37 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gyroscope Example</title>
+    <title>Gyroscope Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .box {
+            width: 150px;
+            height: 150px;
+            background-color: lightblue;
+            border: 2px solid blue;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: navy;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.1s ease-out;
+        }
+
+        .info {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
 </head>
 <body>
-    <h2>Gyroscope Data</h2>
-    <p>Alpha (Z-axis): <span id="alpha">0</span>°</p>
-    <p>Beta (X-axis): <span id="beta">0</span>°</p>
-    <p>Gamma (Y-axis): <span id="gamma">0</span>°</p>
-    <button onclick="requestPermission()">Enable Gyroscope</button>
+
+    <h1>Gyroscope Demo</h1>
+    <div class="box">Move Me!</div>
+    <div class="info">
+        <p>Rotation X: <span id="x">0</span>°</p>
+        <p>Rotation Y: <span id="y">0</span>°</p>
+        <p>Rotation Z: <span id="z">0</span>°</p>
+    </div>
 
     <script>
-        if (window.DeviceOrientationEvent) {
-            window.addEventListener("deviceorientation", function(event) {
-                document.getElementById("alpha").innerText = event.alpha.toFixed(2);
-                document.getElementById("beta").innerText = event.beta.toFixed(2);
-                document.getElementById("gamma").innerText = event.gamma.toFixed(2);
-            }, true);
+        if ('DeviceOrientationEvent' in window && typeof DeviceOrientationEvent.requestPermission === 'function') {
+            // iOS requires permission
+            document.body.addEventListener('click', () => {
+                DeviceOrientationEvent.requestPermission().then(permissionState => {
+                    if (permissionState === 'granted') {
+                        window.addEventListener('deviceorientation', handleOrientation);
+                    }
+                }).catch(console.error);
+            });
+        } else if ('DeviceOrientationEvent' in window) {
+            window.addEventListener('deviceorientation', handleOrientation);
         } else {
-            alert("Gyroscope not supported on this device.");
+            alert("Your device does not support Gyroscope!");
         }
 
-        function requestPermission() {
-          window.DeviceMotionEvent.requestPermission().then(response => {
-        if (response === 'granted') {
-            window.addEventListener("deviceorientation", (event) => {
-                console.log(`Alpha: ${event.alpha}, Beta: ${event.beta}, Gamma: ${event.gamma}`);
-            });
-        } else {
-            alert("Permission denied!");
+        function handleOrientation(event) {
+            const x = event.beta.toFixed(2);  // Tilting front-back
+            const y = event.gamma.toFixed(2); // Tilting left-right
+            const z = event.alpha.toFixed(2); // Compass rotation
+
+            document.getElementById("x").textContent = x;
+            document.getElementById("y").textContent = y;
+            document.getElementById("z").textContent = z;
+
+            // Rotate the box based on gyroscope movement
+            document.querySelector(".box").style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
         }
-    }).catch(console.error);
-}
     </script>
+
 </body>
 </html>
