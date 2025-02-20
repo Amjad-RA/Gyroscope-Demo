@@ -1,14 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gyroscope Example</title>
 </head>
 <body>
-  <h1>Gyroscope Sensor Demo</h1>
-  <div id="root"></div>
-  <script src="main.js"></script>
+    <h2>Gyroscope Data</h2>
+    <p>Alpha (Z-axis): <span id="alpha">0</span>°</p>
+    <p>Beta (X-axis): <span id="beta">0</span>°</p>
+    <p>Gamma (Y-axis): <span id="gamma">0</span>°</p>
+    <button onclick="requestPermission()">Enable Gyroscope</button>
+
+    <script>
+        if (window.DeviceOrientationEvent) {
+            window.addEventListener("deviceorientation", function(event) {
+                document.getElementById("alpha").innerText = event.alpha.toFixed(2);
+                document.getElementById("beta").innerText = event.beta.toFixed(2);
+                document.getElementById("gamma").innerText = event.gamma.toFixed(2);
+            }, true);
+        } else {
+            alert("Gyroscope not supported on this device.");
+        }
+
+        function requestPermission() {
+          window.DeviceMotionEvent.requestPermission().then(response => {
+        if (response === 'granted') {
+            window.addEventListener("deviceorientation", (event) => {
+                console.log(`Alpha: ${event.alpha}, Beta: ${event.beta}, Gamma: ${event.gamma}`);
+            });
+        } else {
+            alert("Permission denied!");
+        }
+    }).catch(console.error);
+}
+    </script>
 </body>
 </html>
