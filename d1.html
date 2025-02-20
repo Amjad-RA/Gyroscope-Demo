@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gyroscope Box</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .box {
+            width: 80px;
+            height: 80px;
+            background-color: lightblue;
+            border: 2px solid blue;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: navy;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            transition: transform 0.1s ease-out;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="box">Move Me!</div>
+
+    <script>
+        let box = document.querySelector(".box");
+
+        let posX = window.innerWidth / 2 - 40;  // Start in the center
+        let posY = window.innerHeight / 2 - 40;
+        const speedFactor = 1.5; // Adjust sensitivity
+
+        function handleOrientation(event) {
+            const tiltX = event.beta;  // Forward/backward tilt (-90 to 90)
+            const tiltY = event.gamma; // Left/right tilt (-45 to 45)
+
+            // Update positions based on tilt
+            posX += tiltY * speedFactor;
+            posY += tiltX * speedFactor;
+
+            // Ensure the box stays within viewport limits
+            const maxX = window.innerWidth - box.clientWidth;
+            const maxY = window.innerHeight - box.clientHeight;
+
+            posX = Math.max(0, Math.min(maxX, posX));
+            posY = Math.max(0, Math.min(maxY, posY));
+
+            // Apply new position
+            box.style.transform = `translate(${posX}px, ${posY}px)`;
+        }
+
+        if ('DeviceOrientationEvent' in window) {
+            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                // iOS requires permission
+                document.body.addEventListener('click', () => {
+                    DeviceOrientationEvent.requestPermission().then(permissionState => {
+                        if (permissionState === 'granted') {
+                            window.addEventListener('deviceorientation', handleOrientation);
+                        }
+                    }).catch(console.error);
+                });
+            } else {
+                window.addEventListener('deviceorientation', handleOrientation);
+            }
+        } else {
+            alert("Your device does not support Gyroscope!");
+        }
+    </script>
+
+</body>
+</html>
