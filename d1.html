@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gyroscope Box</title>
+    <title>Gyroscope Box Inside Container</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,20 +14,28 @@
             justify-content: center;
             height: 100vh;
             background-color: #f4f4f4;
-            overflow: hidden;
+        }
+
+        .container {
+            width: 300px;
+            height: 300px;
+            background-color: white;
+            border: 3px solid black;
             position: relative;
+            overflow: hidden;
+            border-radius: 10px;
         }
 
         .box {
-            width: 80px;
-            height: 80px;
+            width: 50px;
+            height: 50px;
             background-color: lightblue;
             border: 2px solid blue;
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             color: navy;
             box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
@@ -38,13 +46,16 @@
 </head>
 <body>
 
-    <div class="box">Move Me!</div>
+    <div class="container">
+        <div class="box">Move Me!</div>
+    </div>
 
     <script>
         let box = document.querySelector(".box");
+        let container = document.querySelector(".container");
 
-        let posX = window.innerWidth / 2 - 40;  // Start in the center
-        let posY = window.innerHeight / 2 - 40;
+        let posX = (container.clientWidth - box.clientWidth) / 2;  // Start in the center
+        let posY = (container.clientHeight - box.clientHeight) / 2;
         const speedFactor = 1.5; // Adjust sensitivity
 
         function handleOrientation(event) {
@@ -55,9 +66,9 @@
             posX += tiltY * speedFactor;
             posY += tiltX * speedFactor;
 
-            // Ensure the box stays within viewport limits
-            const maxX = window.innerWidth - box.clientWidth;
-            const maxY = window.innerHeight - box.clientHeight;
+            // Ensure the box stays within the container limits
+            const maxX = container.clientWidth - box.clientWidth;
+            const maxY = container.clientHeight - box.clientHeight;
 
             posX = Math.max(0, Math.min(maxX, posX));
             posY = Math.max(0, Math.min(maxY, posY));
